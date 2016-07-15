@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import moment from 'moment'
 
-require('./style.scss')
+import './style.scss'
 
 let CreateNewRow = React.createClass({
   render() {
