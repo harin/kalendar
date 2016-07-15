@@ -1,0 +1,14 @@
+td {
+  background: #eee;
+  &.free {
+    background: green;
+
+    &:hover {
+      background: darkgreen;
+    }
+  }
+
+  .empty:hover {
+    background: #fff;
+  }
+}
