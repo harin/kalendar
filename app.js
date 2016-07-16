@@ -50,6 +50,11 @@ let Row = React.createClass({
     this.props.updateRow(this.props.index, row);
   },
 
+  removeBtnHandler(e) {
+    let sure = confirm('Are you sure you want to remove ' + this.props.row.name + '?')
+    if (sure) this.props.removeRow(this.props.index)
+  },
+
   render() {
     let row = this.props.row;
     let tds = row.data.map((day, idx) => {
@@ -64,7 +69,12 @@ let Row = React.createClass({
     })
     return (
       <tr>
-        <td> { row.name } </td>
+        <td> 
+          { row.name } 
+          <button className="btn pull-right"
+                  onClick={this.removeBtnHandler}
+          >x</button>
+        </td>
       { tds }
       </tr>
     )
@@ -104,6 +114,12 @@ let Calendar = React.createClass({
     this.setState({rows: rows});
   },
 
+  removeRow(rowIdx) {
+    let rows = this.state.rows;
+    rows = rows.slice(0, rowIdx).concat(rows.slice(rowIdx + 1))
+    this.setState({rows: rows});
+  },
+
   createRow(name, e) {
     console.log('creating row with name', name)
     let rows = this.state.rows
@@ -121,6 +137,7 @@ let Calendar = React.createClass({
     }
   },
 
+
   enterKeyUpHandler(e) {
     if (e.keyCode == 13) {
       this.createRow(e.target.value, e)
@@ -130,7 +147,9 @@ let Calendar = React.createClass({
   render() {
     console.log('rendering', this.state);
     let body = this.state.rows.map((row, idx) => {
-      return <Row row={row} key={idx} index={ idx } updateRow={ this.updateRow }/>
+      return <Row row={row} key={idx} index={ idx } 
+                  updateRow={ this.updateRow }
+                  removeRow={ this.removeRow }/>
     })
     let header = Array(this.state.daysInMonth).fill().map((row, idx) => {
       return <th>{ idx + 1 }</th>
