@@ -1,52 +1,70 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import moment from 'moment'
+import * as firebase from 'firebase'
 
 import './style.scss'
 
-let CreateNewRow = React.createClass({
-  render() {
-    let tds = this.props.row.map((day) => {
-      let className = "empty";
-      return <td className={className}></td>
-    })
-    return (
-      <tr>
-        <td><input name="newRow" placeholder="Enter a name"/></td>
-      { tds }
-      </tr>
-    )
-  }
-})
+// let CreateNewRow = React.createClass({
+//   render() {
+//     let tds = this.props.row.map((day) => {
+//       let className = "empty";
+//       return <td className={className}></td>
+//     })
+//     return (
+
+//     )
+//   }
+// })
+// 
+
+console.log('init firebase');
+var config = {
+  apiKey: "AIzaSyBk6FW05hqGXaH7PaFcyEoW3KbXTitoB10",
+  authDomain: "kslendar-58bac.firebaseapp.com",
+  databaseURL: "https://kslendar-58bac.firebaseio.com",
+  storageBucket: "kslendar-58bac.appspot.com",
+};
+firebase.initializeApp(config);
+
 
 let Cell = React.createClass({
-  getInitialState() {
-    return {
-      state: 'empty'
-    }
-  },
   clickHandler(e) {
-    console.log('click')
-    if (this.state.state === 'empty')
-      this.setState({state: 'free'})
+    if (this.props.state === 'empty')
+      this.props.updateState(this.props.index, 'free')
     else
-      this.setState({state: 'empty'})
+      this.props.updateState(this.props.index, 'empty')
   },
+
   render() {
-    console.log('rendering cell')
-    let className = this.state.state;
+    let className = this.props.state;
     return <td className={className} onClick={this.clickHandler}></td>
   }
 })
 
 let Row = React.createClass({
+  updateCellState(cellIdx, newState) {
+    let row = this.props.row;
+    if (!row.data[cellIdx]) row.data[cellIdx] = {};
+    row.data[cellIdx].state = newState;
+    this.props.updateRow(this.props.index, row);
+  },
+
   render() {
-    let tds = this.props.row.map((day, idx) => {
-      return  <Cell state={ null } />
+    let row = this.props.row;
+    let tds = row.data.map((day, idx) => {
+      let state = 'empty'
+      if (day) {
+        state = day.state
+      }
+      return  <Cell state={ state } 
+                    updateState={ this.updateCellState } 
+                    key={ idx } 
+                    index={ idx }/>
     })
     return (
       <tr>
-        <td> Kamsai </td>
+        <td> { row.name } </td>
       { tds }
       </tr>
     )
@@ -54,34 +72,85 @@ let Row = React.createClass({
 })
 
 let Calendar = React.createClass({
-  
+  getDataPath() {
+    return `calendar/${this.props.id}`
+  }, 
+
+  componentDidMount() {
+    firebase.database().ref(this.getDataPath()).on('value', (snapshot) => {
+      this.setState(snapshot.val());
+    })
+  },
+
   getInitialState() {
     let date = new Date();
     let year = date.getYear()
     let month = date.getMonth()
     let daysInMonth = new Date(year, month, 0).getDate();
-    let days = Array(daysInMonth).fill().map((v, idx) => {
-      return <th>{idx + 1}</th>
-    })
     return {
-      rows: [days]
+      month: month+1,
+      daysInMonth: daysInMonth,
+      rows: []
+    }
+  },
+
+  componentDidUpdate(prevProps, prevState) {
+    firebase.database().ref(this.getDataPath()).set(this.state)
+  },
+
+  updateRow(rowIdx, updatedRow) {
+    let rows = this.state.rows;
+    rows[rowIdx] = updatedRow;
+    this.setState({rows: rows});
+  },
+
+  createRow(name, e) {
+    console.log('creating row with name', name)
+    let rows = this.state.rows
+    let newRow = {
+      name: name,
+      data: Array(this.state.daysInMonth).fill({
+        state: 'empty'
+      })
+    }
+    rows.push(newRow)
+    this.setState({rows: rows})
+
+    if (e) {
+      e.target.value = ''
+    }
+  },
+
+  enterKeyUpHandler(e) {
+    if (e.keyCode == 13) {
+      this.createRow(e.target.value, e)
     }
   },
 
   render() {
+    console.log('rendering', this.state);
     let body = this.state.rows.map((row, idx) => {
-      return <Row row={row} key={idx}/>
+      return <Row row={row} key={idx} index={ idx } updateRow={ this.updateRow }/>
     })
-    let header = this.state.rows[0]
+    let header = Array(this.state.daysInMonth).fill().map((row, idx) => {
+      return <th>{ idx + 1 }</th>
+    })
     header.unshift(<tr>Name</tr>)
     return (
       <table className="table table-bordered">
         <thead>
           <tr> { header } </tr>
         </thead>
+        <tfoot>
+          <tr>
+            <td><input name="newRow" 
+                      placeholder="Enter a name"
+                      onKeyUp={ this.enterKeyUpHandler }/>
+            </td>
+          </tr>
+        </tfoot>
         <tbody>
           { body }
-          <CreateNewRow row={this.state.rows[0]} />
         </tbody>
       </table>
     )
@@ -89,11 +158,12 @@ let Calendar = React.createClass({
 })
 
 let App = React.createClass({
+
   render() {
     return (
       <div className="container-fluid">
         <div className="row">
-          <Calendar />
+          <Calendar id={ 'kamsai' }/>
         </div>
       </div>
     )
