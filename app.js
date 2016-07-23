@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import moment from 'moment'
 import * as firebase from 'firebase'
-
+import { Router, Route, browserHistory, IndexRoute} from 'react-router'
 import './style.scss'
 
 // let CreateNewRow = React.createClass({
@@ -16,7 +16,7 @@ import './style.scss'
 //     )
 //   }
 // })
-// 
+//
 
 console.log('init firebase');
 var config = {
@@ -26,7 +26,6 @@ var config = {
   storageBucket: "kslendar-58bac.appspot.com",
 };
 firebase.initializeApp(config);
-
 
 let Cell = React.createClass({
   clickHandler(e) {
@@ -62,15 +61,15 @@ let Row = React.createClass({
       if (day) {
         state = day.state
       }
-      return  <Cell state={ state } 
-                    updateState={ this.updateCellState } 
-                    key={ idx } 
+      return  <Cell state={ state }
+                    updateState={ this.updateCellState }
+                    key={ idx }
                     index={ idx }/>
     })
     return (
       <tr>
-        <td> 
-          { row.name } 
+        <td>
+          { row.name }
           <button className="btn pull-right"
                   onClick={this.removeBtnHandler}
           >x</button>
@@ -84,7 +83,7 @@ let Row = React.createClass({
 let Calendar = React.createClass({
   getDataPath() {
     return `calendar/${this.props.id}`
-  }, 
+  },
 
   componentDidMount() {
     firebase.database().ref(this.getDataPath()).on('value', (snapshot) => {
@@ -145,24 +144,23 @@ let Calendar = React.createClass({
   },
 
   render() {
-    console.log('rendering', this.state);
     let body = this.state.rows.map((row, idx) => {
-      return <Row row={row} key={idx} index={ idx } 
+      return <Row row={row} key={idx} index={ idx }
                   updateRow={ this.updateRow }
                   removeRow={ this.removeRow }/>
     })
-    let header = Array(this.state.daysInMonth).fill().map((row, idx) => {
-      return <th>{ idx + 1 }</th>
+    let header = Array(this.state.daysInMonth).fill().map((v, idx) => {
+      return <th key={idx}>{ idx + 1 }</th>
     })
-    header.unshift(<tr>Name</tr>)
+    header.unshift(<th key="name">Name</th>)
     return (
       <table className="table table-bordered">
         <thead>
-          <tr> { header } </tr>
+          <tr>{ header }</tr>
         </thead>
         <tfoot>
           <tr>
-            <td><input name="newRow" 
+            <td><input name="newRow"
                       placeholder="Enter a name"
                       onKeyUp={ this.enterKeyUpHandler }/>
             </td>
@@ -176,15 +174,92 @@ let Calendar = React.createClass({
   }
 })
 
+let uiConfig = {
+  'signInSuccessUrl': '/',
+  'signInOptions': [
+    // Leave the lines as is for the providers you want to offer your users.
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+    // firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+    // firebase.auth.GithubAuthProvider.PROVIDER_ID,
+    // firebase.auth.EmailAuthProvider.PROVIDER_ID
+  ],
+  // Terms of service url.
+  // 'tosUrl': '<your-tos-url>',
+  'callbacks': {
+    'signInSuccess': (currentUser, credential, redirectUrl) => {
+      console.log(currentUser, credential);
+      return true;
+    }
+  }
+};
+
+let ui =  new firebaseui.auth.AuthUI(firebase.auth());
 let App = React.createClass({
+  getInitialState() {
+    return {}
+  },
+
+  componentDidMount() {
+    // FirebaseUI config.
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log('user', user);
+        this.setState({user: user})
+      } else {
+        this.setState({user: null})
+        ui.start('#firebaseui-auth-container', uiConfig);
+      }
+    }, (err) => {
+      console.error(err);
+    })
+  },
+
+  componentDidUpdate() {
+    console.log('state', this.state);
+  },
+
+  signOut() {
+    firebase.auth().signOut()
+  },
 
   render() {
+    let accountUI = <div id="firebaseui-auth-container"></div>
+    if (this.state.user) {
+      accountUI = (
+        <div>
+        <span className="navbar-text">{ this.state.user.displayName }</span>
+        <button className="btn btn-default navbar-btn" onClick={this.signOut}>signout</button>
+        </div>
+      )
+    }
+
     return (
-      <div className="container-fluid">
-        <div className="row">
-          <Calendar id={ 'kamsai' }/>
+      <div className="app">
+        <nav className="navbar navbar-inverse navbar-fixed-top">
+          <div className="container">
+            <div className="navbar-header">
+              <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span className="sr-only">Toggle navigation</span>
+                <span className="icon-bar"></span>
+                <span className="icon-bar"></span>
+                <span className="icon-bar"></span>
+              </button>
+              <a className="navbar-brand" href="#">kslendar</a>
+            </div>
+            <div className="nav navbar-nav navbar-right">
+              {accountUI}
+            </div>
+          </div>
+        </nav>
+        <div className="container-fluid" id="main">
+          <div className="row">
+            <Calendar id={ 'kamsai' }/>
+          </div>
         </div>
       </div>
+
     )
   }
 })

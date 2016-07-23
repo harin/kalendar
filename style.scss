@@ -12,3 +12,14 @@ td {
     background: #fff;
   }
 }
+
+
+
+#main {
+  margin-top: 76px;
+}
+@media (min-width: 768px) {
+  #main {
+    margin-top: 50px;
+  }
+}
