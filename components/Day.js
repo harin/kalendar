@@ -24,7 +24,6 @@ class Day extends Component {
   }
 
   render() {
-    console.log('rendering', this.props)
     let className = this.props.day.status;
     return <td className={className} onClick={this.handleClick.bind(this)}></td>
   }

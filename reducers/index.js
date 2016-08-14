@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux'
-import calendar from './calendar'
+import calendarList from './calendar_list'
 
 const rootReducer = combineReducers({
-  calendar
+  calendarList
 })
 
 export default rootReducer

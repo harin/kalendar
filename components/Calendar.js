@@ -8,18 +8,30 @@ class Calendar extends Component {
   }
 
   handleEnter(e) {
+    const { actions, calendar } = this.props
     if (e.keyCode == 13) {
       let memberId = e.target.value
-      this.props.actions.addMember(memberId)
+      actions.addMember(calendar.id, memberId)
+      e.target.value = ''
     }
+  }
+
+  removeMember(memberId) {
+    const { actions, calendar } = this.props
+    actions.removeMember(calendar.id, memberId)
+  }
+
+  markStatus(memberId, eventId, status) {
+    const { actions, calendar } = this.props
+    actions.markStatus(calendar.id, memberId, eventId, status)
   }
 
   render() {
     let body = this.props.calendar.members.map((member) => {
       return <Member member={ member }
                   key={ member.id }
-                  updateCellStatus={ this.props.actions.markStatus }
-                  removeMember={ this.props.actions.removeMember }/>
+                  updateCellStatus={ this.markStatus.bind(this) }
+                  removeMember={ this.removeMember.bind(this) }/>
     })
     let header = Array(31).fill().map((v, idx) => {
       return (<th key={idx}>{ idx + 1 }</th>)

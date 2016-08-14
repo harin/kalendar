@@ -1,6 +1,6 @@
 import { MARK_STATUS, ADD_MEMBER, REMOVE_MEMBER } from '../constants/ActionTypes'
 
-const initialState = {
+export const initialState = {
   name: 'Untitled',
   members: [],
   id: 0,

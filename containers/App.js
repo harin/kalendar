@@ -1,25 +1,29 @@
 import React, { Component, PropTypes } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import Calendar from '../components/Calendar'
+import CalendarList from '../components/CalendarList'
 import * as Actions from '../actions'
 
 class App extends Component {
   render() {
-    const { calendar, actions } = this.props
+    const { calendarList, actions } = this.props
     return (
-      <Calendar calendar={calendar} actions={actions}/>
+      <CalendarList calendarList={calendarList} actions={actions}/>
     )
   }
 }
 
 App.propTypes = {
-  calendar: PropTypes.object.isRequired
+  calendarList: PropTypes.array.isRequired
 }
 
 function mapStateToProps(state) {
   return {
-    calendar: state.calendar
+    calendarList: state.calendarList,
+    user: {
+      id: 'bob',
+      name: 'bob'
+    }
   }
 }
 

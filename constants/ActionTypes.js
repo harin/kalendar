@@ -1,3 +1,6 @@
 export const MARK_STATUS = 'MARK_STATUS'
 export const ADD_MEMBER = 'ADD_MEMBER'
 export const REMOVE_MEMBER = 'REMOVE_MEMBER'
+
+export const CREATE_CALENDAR = 'CREATE_CALENDAR'
+export const DELETE_CALENDAR = 'DELETE_CALENDAR'

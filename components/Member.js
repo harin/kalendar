@@ -12,8 +12,12 @@ class Member extends Component {
     if (sure) this.props.removeMember(this.props.member.id)
   }
 
+  updateStatus(eventId, status) {
+
+  }
+
   render() {
-    const { member, updateCellStatus} = this.props
+    const { member, updateCellStatus } = this.props
     let tds = member.days.map((day, idx) => {
       return  <Day day={ day }
                   memberId={ member.id }
