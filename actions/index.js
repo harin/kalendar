@@ -15,8 +15,8 @@ export function removeMember(calendarId, memberId) {
 //
 // calendar list
 //
-export function createCalendar(ownerId) {
-  return { type: types.CREATE_CALENDAR, ownerId }
+export function createCalendar(name, ownerId) {
+  return { type: types.CREATE_CALENDAR, name, ownerId }
 }
 
 export function deleteCalendar(calendarId) {

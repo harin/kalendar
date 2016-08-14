@@ -15,7 +15,9 @@ class CalendarList extends Component {
     const { calendarList, actions } = this.props
     let list = calendarList.map((calendar) => {
       return (
-        <Calendar actions={ actions } calendar={ calendar } />
+        <Calendar key={ calendar.id }
+          actions={ actions }
+          calendar={ calendar } />
       )
     })
     return (

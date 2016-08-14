@@ -1,5 +1,5 @@
 import { CREATE_CALENDAR, DELETE_CALENDAR } from '../constants/ActionTypes'
-import calendar, {initialState as calendarDefault} from './calendar'
+import calendar, { createCalendar } from './calendar'
 
 const initialState = []
 
@@ -7,7 +7,7 @@ export default function calendarList(state = initialState, action) {
   switch (action.type) {
     case CREATE_CALENDAR:
       return [
-        calendarDefault,
+        createCalendar(action.name, action.ownerId),
         ...state
       ]
     case DELETE_CALENDAR:

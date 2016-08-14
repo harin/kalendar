@@ -1,10 +1,12 @@
 import { MARK_STATUS, ADD_MEMBER, REMOVE_MEMBER } from '../constants/ActionTypes'
 
-export const initialState = {
-  name: 'Untitled',
-  members: [],
-  id: 0,
-  ownerId: null
+export function createCalendar(name = 'untitled', ownerId) {
+  return {
+    name,
+    members: [],
+    id: +new Date() + '' + ownerId,
+    ownerId
+  }
 }
 
 function cloneState(obj) {
@@ -35,7 +37,7 @@ function markStatus(state, action, status) {
   return _state
 }
 
-export default function calendar(state = initialState, action) {
+export default function calendar(state = createCalendar(), action) {
   console.log('reducing', action)
   switch (action.type) {
     case MARK_STATUS:
