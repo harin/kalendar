@@ -1,14 +1,16 @@
-import { MARK_FREE, MARK_MAYBE, MARK_BUSY, ADD_MEMBER, REMOVE_MEMBER } from '../constants/ActionTypes'
+import { MARK_STATUS, ADD_MEMBER, REMOVE_MEMBER } from '../constants/ActionTypes'
 
 const initialState = {
-    name: 'Untitled',
-    members: [],
-    id: 0
+  name: 'Untitled',
+  members: [],
+  id: 0,
+  ownerId: null
 }
 
 function cloneState(obj) {
   return JSON.parse(JSON.stringify(obj))
 }
+
 function cloneMember(obj) {
   return cloneState(obj)
 }
@@ -24,10 +26,8 @@ function findMember(state, id) {
 function markStatus(state, action, status) {
   let _state = cloneState(state)
   _state.members.forEach((member) => {
-    console.log(member.id, action.memberId)
     if (member.id === action.memberId) {
       member.days.forEach((day) => {
-        console.log(day.id, action.eventId)
         if (day.id === action.eventId) day.status = status
       })
     }
@@ -36,15 +36,10 @@ function markStatus(state, action, status) {
 }
 
 export default function calendar(state = initialState, action) {
+  console.log('reducing', action)
   switch (action.type) {
-    case MARK_FREE:
-      return markStatus(state, action, 'free')
-
-    case MARK_MAYBE:
-      return markStatus(state, action, 'maybe')
-
-    case MARK_BUSY:
-      return markStatus(state, action, 'busy')
+    case MARK_STATUS:
+      return markStatus(state, action, action.status)
 
     case ADD_MEMBER:
       let matched = findMember(state, action.memberId)

@@ -1,15 +1,7 @@
 import * as types from '../constants/ActionTypes'
 
-export function markFree(memberId, eventId) {
-  return { type: types.MARK_FREE, memberId, eventId}
-}
-
-export function markBusy(memberId, eventId) {
-  return { type: types.MARK_BUSY, memberId, eventId}
-}
-
-export function markMaybe(memberId, eventId) {
-  return { type: types.MARK_MAYBE, memberId, eventId}
+export function markStatus(memberId, eventId, status) {
+  return { type: types.MARK_STATUS, memberId, eventId, status}
 }
 
 export function addMember(memberId) {

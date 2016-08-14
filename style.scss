@@ -8,6 +8,14 @@ td {
     }
   }
 
+  &.maybe {
+    background: yellow;
+
+    &.hover {
+      background: darkyellow;
+    }
+  }
+
   .empty:hover {
     background: #fff;
   }

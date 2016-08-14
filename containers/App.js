@@ -1,25 +1,21 @@
 import React, { Component, PropTypes } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import * as TodoActions from '../actions'
-
-window.actions = TodoActions
-
+import Calendar from '../components/Calendar'
+import * as Actions from '../actions'
 
 class App extends Component {
   render() {
+    const { calendar, actions } = this.props
     return (
-      <div>
-        <h1>Hello Redux!</h1>
-      </div>
+      <Calendar calendar={calendar} actions={actions}/>
     )
   }
 }
 
 App.propTypes = {
-
+  calendar: PropTypes.object.isRequired
 }
-
 
 function mapStateToProps(state) {
   return {
@@ -29,7 +25,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(TodoActions, dispatch)
+    actions: bindActionCreators(Actions, dispatch)
   }
 }
 

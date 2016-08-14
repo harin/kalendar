@@ -27,58 +27,7 @@ var config = {
 };
 firebase.initializeApp(config);
 
-let Cell = React.createClass({
-  clickHandler(e) {
-    if (this.props.state === 'empty')
-      this.props.updateState(this.props.index, 'free')
-    else
-      this.props.updateState(this.props.index, 'empty')
-  },
 
-  render() {
-    let className = this.props.state;
-    return <td className={className} onClick={this.clickHandler}></td>
-  }
-})
-
-let Row = React.createClass({
-  updateCellState(cellIdx, newState) {
-    let row = this.props.row;
-    if (!row.data[cellIdx]) row.data[cellIdx] = {};
-    row.data[cellIdx].state = newState;
-    this.props.updateRow(this.props.index, row);
-  },
-
-  removeBtnHandler(e) {
-    let sure = confirm('Are you sure you want to remove ' + this.props.row.name + '?')
-    if (sure) this.props.removeRow(this.props.index)
-  },
-
-  render() {
-    let row = this.props.row;
-    let tds = row.data.map((day, idx) => {
-      let state = 'empty'
-      if (day) {
-        state = day.state
-      }
-      return  <Cell state={ state }
-                    updateState={ this.updateCellState }
-                    key={ idx }
-                    index={ idx }/>
-    })
-    return (
-      <tr>
-        <td>
-          { row.name }
-          <button className="btn pull-right"
-                  onClick={this.removeBtnHandler}
-          >x</button>
-        </td>
-      { tds }
-      </tr>
-    )
-  }
-})
 
 let Calendar = React.createClass({
   getDataPath() {
