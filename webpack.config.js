@@ -1,10 +1,21 @@
+var path = require('path')
+var webpack = require('webpack')
+
 module.exports = {
-  entry: "./app.js",
+  devtool: 'cheap-module-eval-source-map',
+  entry: [
+    "webpack-hot-middleware/client",
+    './index.js'
+  ],
   output: {
-      path: __dirname + "/build",
-      publicPath: "/assets/",
-      filename: "bundle.js"
+      path: path.join(__dirname, 'dist'),
+      filename: "bundle.js",
+      publicPath: "/static/"
   },
+  plugins: [
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin()
+  ],
   module: {
     loaders: [
       {
@@ -17,11 +28,13 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loaders: ["style", "css", "sass"]
+        loaders: ["style", "css", "sass"],
+        include: __dirname
       },
-      { 
-        test: /\.css$/, 
-        loader: "style-loader!css-loader" 
+      {
+        test: /\.css$/,
+        loader: "style-loader!css-loader",
+        include: __dirname
       }
     ]
   }

@@ -1,16 +1,23 @@
-"use strict";
-let express = require('express');
-let path = require('path');
-let app = express();
+var webpack = require('webpack')
+var webpackDevMiddleware = require('webpack-dev-middleware')
+var webpackHotMiddleware = require('webpack-hot-middleware')
+var config = require('./webpack.config')
 
-app.use('/assets', express.static('build'))
+var app = new (require('express'))()
+var port = 3000
 
-app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname + '/index.html'));
-});
+var compiler = webpack(config)
+app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: config.output.publicPath }))
+app.use(webpackHotMiddleware(compiler))
 
-let port = process.env.PORT || 3000;
+app.get("/", function(req, res) {
+  res.sendFile(__dirname + '/index.html')
+})
 
-app.listen(port, function () {
-  console.log('Example app listening on port ' + port + '!');
-});
+app.listen(port, function(error) {
+  if (error) {
+    console.error(error)
+  } else {
+    console.info("==> 🌎  Listening on port %s. Open up http://localhost:%s/ in your browser.", port, port)
+  }
+})

@@ -1,0 +1,5 @@
+export const MARK_BUSY = 'MARK_BUSY'
+export const MARK_FREE = 'MARK_FREE'
+export const MARK_MAYBE = 'MARK_MAYBE'
+export const ADD_MEMBER = 'ADD_MEMBER'
+export const REMOVE_MEMBER = 'REMOVE_MEMBER'
